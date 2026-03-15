@@ -51,7 +51,14 @@ Cela désactive complètement la carte réseau du conteneur. Le malware ne peut 
 
 > **Note :** Si l'environnement doit servir de couteau suisse pour jouer sur une plateforme de type HackTheBox ou ROOT ME (Cas CTF) sans risque infectieux, commentez `network_mode: none` et décommentez `# network_mode: host` dans le fichier `compose.yaml` pour activer la résolution internet.
 
-De plus, le conteneur est lancé en intégrant la capabilitée `SYS_ADMIN` de Docker (`cap_add: SYS_ADMIN`), élément indispensable si vous avez l'intention de monter manuellement une image de disque brute dans un système de fichiers virtuel pour l'analyser (commande `mount -o loop`).
+De plus, le conteneur est lancé en intégrant plusieurs **"Capabilities" Linux** indispensables à l'investigation numérique :
+* `NET_RAW` / `NET_ADMIN` : Indispensables pour écouter et capturer du trafic en direct avec `tshark`, `ngrep` ou `tcpdump`.
+* `SYS_ADMIN` / `MKNOD` : Indispensables si vous avez l'intention de monter manuellement une image de disque brute (`.dd` ou `.raw`) en création de point de montage par boucle (`mount -o loop`). 
+
+> 💡 **À propos du montage d'images (Loop Devices)**
+> Sur la plupart des distributions Linux (Bazzite, Fedora Silverblue), allouer statiquement `/dev/loop0` dans Docker fait planter le conteneur. C'est pourquoi le bloc `devices:` est commenté dans `compose.yaml`.
+> - **Méthode recommandée :** Ne montez pas l'image. Utilisez simplement **The Sleuth Kit** (`fls`, `icat`, `mmls`) pour explorer vos fichiers d'images virtuels (VMDK/VHD/E01) directement, c'est plus sûr en Forensics !
+> - **Si vous devez utiliser la commande mount :** Décommentez le bloc `devices:` dans `compose.yaml` **OU BIEN** générez votre périphérique à la main dans le conteneur avec `mknod /dev/loop0 b 7 0` puis `losetup`.
 
 ## 🚀 Utilisation
 
