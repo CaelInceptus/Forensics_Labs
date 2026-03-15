@@ -1,4 +1,6 @@
-# 🕵️‍♂️ Forensics Labs - 100% CLI Container 
+# 🕵️‍♂️ Forensics Labs - 100% CLI Container
+
+> ⚠️ **Note personnelle** : Ce projet est le fruit de mon propre apprentissage. Je ne suis pas encore un expert et je continue d'apprendre chaque jour, que ce soit sur Docker ou sur les analyses Forensics. Il est donc tout à fait possible que cet environnement ne soit pas parfait et qu'il y ait des mises à jour à l'avenir au fil de ma progression. Les retours constructifs sont les bienvenus ! 😄
 
 ## 📝 Description
 
