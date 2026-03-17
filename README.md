@@ -12,7 +12,7 @@ Basée sur **Debian Stable Slim**, l'image est optimisée pour minimiser la surf
 
 ## 🛠️ Outils Inclus
 
-Les outils sont divisés en plusieurs couches pour optimiser le temps de build et la lisibilité du `Containerfile`.
+Les outils sont divisés en plusieurs couches pour optimiser le temps de build et la lisibilité du `Dockerfile`.
 
 ### 1. 💽 Analyse Disques & Systèmes de Fichiers (Forensics)
 * **The Sleuth Kit (TSK)** : Suite d'outils pour l'investigation de systèmes de fichiers (NTFS, FAT, ext, etc..).
@@ -40,25 +40,25 @@ L'environnement configure proprement les références absolues à Volatility :
 
 ## 📂 Structure du projet
 
-* `Containerfile` : Recette Dockerfile multi-calques (Layers) des dépendances.
-* `compose.yaml` : Configuration du déploiement Docker.
+* `Dockerfile` : Recette Dockerfile multi-calques (Layers) des dépendances.
+* `docker-compose.yml` : Configuration du déploiement Docker.
 * `Work/` : Espace partagé contenant vos preuves. **(Généré automatiquement lors du premier lancement, voir section Utilisation)**.
 
 ## 🔒 Sécurité : L'Isolation Réseau (Mode Paranoïa)
 
-Afin qu'un conteneur puisse analyser des données potentiellement infectées (malwares, ransomwares, droppers) de manière **sécurisée**, ce fichier `compose.yaml` intègre par défaut l'option `network_mode: none`. 
+Afin qu'un conteneur puisse analyser des données potentiellement infectées (malwares, ransomwares, droppers) de manière **sécurisée**, ce fichier `docker-compose.yml` intègre par défaut l'option `network_mode: none`. 
 Cela désactive complètement la carte réseau du conteneur. Le malware ne peut joindre aucun C2 (Command & Control). 
 
-> **Note :** Si l'environnement doit servir de couteau suisse pour jouer sur une plateforme de type HackTheBox ou ROOT ME (Cas CTF) sans risque infectieux, commentez `network_mode: none` et décommentez `# network_mode: host` dans le fichier `compose.yaml` pour activer la résolution internet.
+> **Note :** Si l'environnement doit servir de couteau suisse pour jouer sur une plateforme de type HackTheBox ou ROOT ME (Cas CTF) sans risque infectieux, commentez `network_mode: none` et décommentez `# network_mode: host` dans le fichier `docker-compose.yml` pour activer la résolution internet.
 
 De plus, le conteneur est lancé en intégrant plusieurs **"Capabilities" Linux** indispensables à l'investigation numérique :
 * `NET_RAW` / `NET_ADMIN` : Indispensables pour écouter et capturer du trafic en direct avec `tshark`, `ngrep` ou `tcpdump`.
 * `SYS_ADMIN` / `MKNOD` : Indispensables si vous avez l'intention de monter manuellement une image de disque brute (`.dd` ou `.raw`) en création de point de montage par boucle (`mount -o loop`). 
 
 > 💡 **À propos du montage d'images (Loop Devices)**
-> Sur la plupart des distributions Linux (Bazzite, Fedora Silverblue), allouer statiquement `/dev/loop0` dans Docker fait planter le conteneur. C'est pourquoi le bloc `devices:` est commenté dans `compose.yaml`.
+> Sur la plupart des distributions Linux (Bazzite, Fedora Silverblue), allouer statiquement `/dev/loop0` dans Docker fait planter le conteneur. C'est pourquoi le bloc `devices:` est commenté dans `docker-compose.yml`.
 > - **Méthode recommandée :** Ne montez pas l'image. Utilisez simplement **The Sleuth Kit** (`fls`, `icat`, `mmls`) pour explorer vos fichiers d'images virtuels (VMDK/VHD/E01) directement, c'est plus sûr en Forensics !
-> - **Si vous devez utiliser la commande mount :** Décommentez le bloc `devices:` dans `compose.yaml` **OU BIEN** générez votre périphérique à la main dans le conteneur avec `mknod /dev/loop0 b 7 0` puis `losetup`.
+> - **Si vous devez utiliser la commande mount :** Décommentez le bloc `devices:` dans `docker-compose.yml` **OU BIEN** générez votre périphérique à la main dans le conteneur avec `mknod /dev/loop0 b 7 0` puis `losetup`.
 
 ## 🚀 Utilisation
 
@@ -81,6 +81,6 @@ docker exec -it forensics-labs /bin/bash
 ```
 
 > 💡 **Utilisateur de Podman ?**
-> Ce conteneur (basé sur le standard OCI avec `Containerfile`) a été originellement pensé pour **Podman** (notamment sur des OS immuables comme Bazzite/Fedora Silverblue). Il est **100% compatible** avec les deux moteurs sur n'importe quelle distribution Linux ! Remplacez simplement `docker compose` par `podman-compose` dans vos commandes.
+> Ce conteneur a été originellement pensé pour **Podman** (notamment sur des OS immuables comme Bazzite/Fedora Silverblue). Il est **100% compatible** avec les deux moteurs sur n'importe quelle distribution Linux ! Remplacez simplement `docker compose` par `podman compose` dans vos commandes.
 
 > 💡 **Le Saviez-vous ?** Les dossiers `Work/evidence` et `Work/output` de votre hôte sont désormais en prise directe *(mount points)* dans votre conteneur sous la racine `/work`. Vous pouvez injecter vos fichiers `.dd`, `.E01`, `.pcap`, `.mem` depuis votre machine et les retrouver immédiatement dans le shell du conteneur en tapant `ls /work`. Les extractions y seront également conservées !
